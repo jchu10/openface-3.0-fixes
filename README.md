@@ -50,6 +50,8 @@ def preprocess_image(self, image_or_array, resize=1.0):
 
 #### 3. Removed Landmark Detection to Improve Speed
 
+(This is actually redundant since we don't use landmarks for anything downstream)
+
 We skipped:
 
 ```python
