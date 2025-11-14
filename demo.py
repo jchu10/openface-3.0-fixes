@@ -7,22 +7,23 @@ from openface.face_detection import FaceDetector
 from openface.landmark_detection import LandmarkDetector
 from openface.multitask_model import MultitaskPredictor
 
+
 def process_image(image_path, output_dir='results', device='cpu'):
     """
     Process a single image and save results to CSV.
-    
+
     Args:
         image_path (str): Path to the input image
         output_dir (str): Directory to save results
         device (str): Device to run models on ('cuda' or 'cpu')
-    
+
     Returns:
         Path: Path to the output CSV file
     """
     # Initialize models with specified device
     device = 'cpu'
     face_detector = FaceDetector(
-        model_path='./weights/Alignment_RetinaFace.pth', 
+        model_path='./weights/Alignment_RetinaFace.pth',
         device=device
     )
     landmark_detector = LandmarkDetector(
@@ -66,7 +67,7 @@ def process_image(image_path, output_dir='results', device='cpu'):
 
     if dets is not None and len(dets) > 0:
         landmarks = landmark_detector.detect_landmarks(image_raw, dets)
-        
+
         for face_id, (det, landmark) in enumerate(zip(dets, landmarks or [])):
             emotion_logits, gaze_output, au_output = multitask_model.predict(cropped_face)
             emotion_index = torch.argmax(emotion_logits, dim=1).item()
@@ -95,7 +96,7 @@ def process_image(image_path, output_dir='results', device='cpu'):
     df = pd.DataFrame(results)
     output_file = output_dir / f"face_analysis_{image_path.stem}.csv"
     df.to_csv(output_file, index=False)
-    
+
     return output_file
 
 
@@ -117,7 +118,7 @@ def process_video(video_path, output_dir='results', device='cpu'):
 
     # Initialize models
     face_detector = FaceDetector(
-        model_path='./weights/Alignment_RetinaFace.pth', 
+        model_path='./weights/Alignment_RetinaFace.pth',
         device=device
     )
     landmark_detector = LandmarkDetector(
@@ -144,6 +145,7 @@ def process_video(video_path, output_dir='results', device='cpu'):
         'frame_index': [],
         'face_id': [],
         'face_detection': [],
+        'confidence': [],
         'landmarks': [],
         'emotion': [],
         'gaze_yaw': [],
@@ -163,6 +165,7 @@ def process_video(video_path, output_dir='results', device='cpu'):
 
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if dets is not None and len(dets) > 0:
+
             # landmarks = landmark_detector.detect_landmarks(frame, dets)
             # for face_id, (det, landmark) in enumerate(zip(dets, landmarks or [])):
 
@@ -170,12 +173,13 @@ def process_video(video_path, output_dir='results', device='cpu'):
             dets = [det for det in dets if det[4] >= 0.5]
 
             # If still multiple, keep highest confidence
-            if len(dets) > 1:
-                dets = sorted(dets, key=lambda d: d[4], reverse=True)
-                dets = [dets[0]]
+            # if len(dets) > 1:
+            #     dets = sorted(dets, key=lambda d: d[4], reverse=True)
+            #     dets = [dets[0]]
 
             landmarks = []
             for face_id, det in enumerate(dets):
+                conf = float(det[4])
                 landmark = None
                 emotion_logits, gaze_output, au_output = multitask_model.predict(cropped_faces)
                 emotion_index = torch.argmax(emotion_logits, dim=1).item()
@@ -184,6 +188,7 @@ def process_video(video_path, output_dir='results', device='cpu'):
                 results['frame_index'].append(frame_idx)
                 results['face_id'].append(face_id)
                 results['face_detection'].append(det.tolist())
+                results['confidence'].append(conf)
                 results['landmarks'].append(landmark.tolist() if landmark is not None else None)
                 results['emotion'].append(emotion_index)
                 results['gaze_yaw'].append(float(gaze_output[0][0]))
@@ -195,6 +200,7 @@ def process_video(video_path, output_dir='results', device='cpu'):
             results['frame_index'].append(frame_idx)
             results['face_id'].append(None)
             results['face_detection'].append(None)
+            results['confidence'].append(None)
             results['landmarks'].append(None)
             results['emotion'].append(None)
             results['gaze_yaw'].append(None)
@@ -210,7 +216,6 @@ def process_video(video_path, output_dir='results', device='cpu'):
     output_file = output_dir / f"face_analysis_{video_path.stem}.csv"
     df.to_csv(output_file, index=False)
     return output_file
-
 
 
 if __name__ == "__main__":
