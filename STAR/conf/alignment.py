@@ -8,8 +8,8 @@ class Alignment(Base):
     """
 
     def __init__(self, args):
-        super(Alignment, self).__init__('alignment')
-        self.ckpt_dir = '/work/jiewenh/openFace/OpenFace-3.0/STAR'
+        super(Alignment, self).__init__("alignment")
+        self.ckpt_dir = "./"
         self.net = "stackedHGnet_v1"
         self.nstack = 4
         self.loader_type = "alignment"

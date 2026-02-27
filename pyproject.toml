@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openface"
+version = "3.0.0"
+requires-python = ">=3.8"
+
+[project.scripts]
+openface = "openface.cli:cli"
+
+[tool.setuptools]
+packages = [
+    "openface",
+    "openface.model",
+    "openface.STAR",
+    "openface.STAR.conf",
+    "openface.STAR.lib",
+    "openface.STAR.lib.backbone",
+    "openface.STAR.lib.dataset",
+    "openface.STAR.lib.dataset.decoder",
+    "openface.STAR.lib.dataset.encoder",
+    "openface.STAR.lib.loss",
+    "openface.STAR.lib.metric",
+    "openface.STAR.lib.utils",
+    "openface.STAR.tools",
+    "openface.Pytorch_Retinaface",
+    "openface.Pytorch_Retinaface.data",
+    "openface.Pytorch_Retinaface.layers",
+    "openface.Pytorch_Retinaface.layers.functions",
+    "openface.Pytorch_Retinaface.layers.modules",
+    "openface.Pytorch_Retinaface.models",
+    "openface.Pytorch_Retinaface.utils",
+    "openface.Pytorch_Retinaface.utils.nms",
+]
+
+[tool.setuptools.package-dir]
+"openface" = "."

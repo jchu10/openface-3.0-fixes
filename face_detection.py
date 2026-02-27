@@ -36,13 +36,13 @@ class FaceDetector:
         retinaface_model = retinaface_model.to(self.device)
         return retinaface_model
 
-    def preprocess_image(self, image_path: str, resize: float = 1.0):
+    def preprocess_image(self, image_or_array, resize: float = 1.0):
         # If input is a string → treat as file path
-        if isinstance(image_path, str):
+        if isinstance(image_or_array, str):
             img_raw = cv2.imread(image_or_array, cv2.IMREAD_COLOR)
         else:
             # Otherwise assume it's already a numpy BGR frame
-            img_raw = image_path
+            img_raw = image_or_array
 
         # img_raw = cv2.imread(image_path, cv2.IMREAD_COLOR)
         img = np.float32(img_raw)
