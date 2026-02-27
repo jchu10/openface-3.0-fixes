@@ -9,7 +9,7 @@ class Alignment(Base):
 
     def __init__(self, args):
         super(Alignment, self).__init__("alignment")
-        self.ckpt_dir = "./"
+        self.ckpt_dir = "./alignment_logs/"
         self.net = "stackedHGnet_v1"
         self.nstack = 4
         self.loader_type = "alignment"
